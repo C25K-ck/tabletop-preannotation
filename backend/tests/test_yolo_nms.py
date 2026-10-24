@@ -86,6 +86,17 @@ class TableRuleTests(unittest.TestCase):
         self.assertEqual([box["class_id"] for box in kept], [1, 0])
         self.assertEqual(kept[1]["score"], 0.9)
 
+    def test_drops_the_bottom_left_camera_label_and_keeps_nearby_objects(self):
+        boxes = [
+            {"class_id": 0, "x1": 6, "y1": 513, "x2": 89, "y2": 544, "score": 0.69},
+            {"class_id": 0, "x1": 280, "y1": 390, "x2": 360, "y2": 480, "score": 0.9},
+            {"class_id": 0, "x1": 0, "y1": 459, "x2": 39, "y2": 520, "score": 0.91},
+            {"class_id": 2, "x1": 40, "y1": 500, "x2": 80, "y2": 544, "score": 0.7},
+            {"class_id": 0, "x1": 0, "y1": 400, "x2": 200, "y2": 544, "score": 0.8},
+        ]
+        kept = apply_table_rules(boxes, 960, 544, None, None, 0.0)
+        self.assertEqual([box["score"] for box in kept], [0.9, 0.91, 0.7, 0.8])
+
     def test_drops_a_short_robot_box_on_the_edge_light(self):
         boxes = [
             {"class_id": 1, "x1": 10, "y1": 30, "x2": 40, "y2": 60, "score": 0.9},

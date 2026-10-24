@@ -19,6 +19,27 @@ def on_table(box, width: int, height: int, top, bottom) -> bool:
     return _line_y(top, cx) <= cy <= _line_y(bottom, cx)
 
 
+# Burned-in camera name at the lower-left corner of these overhead frames.
+_CAMERA_LABEL = (0.0, 0.92, 0.12, 1.0)
+
+
+def _on_camera_label(box, width: int, height: int) -> bool:
+    """True when an item box is mostly the CAMO1 overlay, not an object beside it."""
+    if box["class_id"] != 0:
+        return False
+    rx1, ry1, rx2, ry2 = _CAMERA_LABEL
+    ix1 = max(box["x1"], rx1 * width)
+    iy1 = max(box["y1"], ry1 * height)
+    ix2 = min(box["x2"], rx2 * width)
+    iy2 = min(box["y2"], ry2 * height)
+    if ix2 <= ix1 or iy2 <= iy1:
+        return False
+    area = (box["x2"] - box["x1"]) * (box["y2"] - box["y1"])
+    if area <= 0:
+        return False
+    return (ix2 - ix1) * (iy2 - iy1) / area >= 0.7
+
+
 def apply_table_rules(
     boxes,
     width: int,
@@ -41,6 +62,8 @@ def apply_table_rules(
             shorter = min(box["x2"] - box["x1"], box["y2"] - box["y1"]) / height
             if shorter < min_robot_side:
                 continue
+        if _on_camera_label(box, width, height):
+            continue
         kept.append(box)
     return _drop_items_that_are_the_robot(kept)
 

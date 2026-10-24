@@ -1,10 +1,11 @@
 {
   "sam3_root": "/home/magiclab/Downloads/sam3_preannotation_delivery_final",
   "checkpoint": "/home/magiclab/weights/sam3.pt",
+  "yolo_weights": "data/runs/cam1/weights/best.pt",
   "threshold": 0.3,
   "nms_iou": 0.5,
   "table_top": [[0.0, 0.1058], [1.0, 0.0222]],
   "table_bottom": [[0.0, 1.0245], [1.0, 0.9292]],
-  "min_item_area": 0.002,
-  "min_robot_side": 0.18
+  "min_item_area": 0,
+  "min_robot_side": 0
 }

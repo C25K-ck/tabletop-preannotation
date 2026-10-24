@@ -11,6 +11,7 @@ def load_config():
     data = {
         "sam3_root": "/home/ck/Downloads/sam3_preannotation_delivery_final",
         "checkpoint": "",
+        "yolo_weights": "data/runs/cam1/weights/best.pt",
         "threshold": 0.3,
         "nms_iou": 0.5,
         "table_top": None,
@@ -28,6 +29,7 @@ def load_config():
     elif not Path(checkpoint).is_absolute():
         checkpoint = str((ROOT / checkpoint).resolve())
     data["checkpoint"] = checkpoint
+    data["yolo_weights"] = _abs(data.get("yolo_weights") or "data/runs/cam1/weights/best.pt")
     data["threshold"] = float(data["threshold"])
     data["nms_iou"] = float(data["nms_iou"])
     data["sam3_root"] = str(data["sam3_root"])
@@ -36,6 +38,16 @@ def load_config():
     data["min_item_area"] = float(data.get("min_item_area") or 0.0)
     data["min_robot_side"] = float(data.get("min_robot_side") or 0.0)
     return data
+
+
+def _abs(path) -> str:
+    text = str(path or "").strip()
+    if not text:
+        return ""
+    candidate = Path(text)
+    if not candidate.is_absolute():
+        candidate = ROOT / candidate
+    return str(candidate.resolve())
 
 
 def _edge(value):
